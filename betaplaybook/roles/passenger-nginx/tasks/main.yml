@@ -1,0 +1,27 @@
+---
+- name: Prep for Passenger Keys
+  shell: /usr/bin/gpg --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7
+
+- name: Get Passenger Keys 
+  shell: /usr/bin/gpg --armor --export 561F9B9CAC40B2F7 | sudo apt-key add -
+
+- name: Install HTTPS Support
+  action: apt pkg=apt-transport-https state=latest
+  sudo: yes
+
+- name:  Passenger | Create Sources file
+  template: src=precise.passenger.list.j2 dest=/etc/apt/sources.list.d/passenger.list   owner=root group=root mode=600
+  sudo: yes
+
+- name: Update apt
+  action: apt update_cache=yes
+  sudo: yes
+
+- name: Get Passenger Packages
+  action: apt pkg={{ item }} state=present
+  sudo: yes
+  with_items:
+    - nginx-full
+    - passenger
+  notify:
+    - restart nginx

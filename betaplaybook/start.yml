@@ -1,0 +1,15 @@
+---
+# - hosts: test
+#   user: admin
+#   sudo: yes
+
+#   roles:
+#     - { role: users }
+#     - { role: base }
+
+- hosts: test
+  user: deploy
+
+  roles:
+    - { role: ruby }
+    # - { role: passenger-nginx }

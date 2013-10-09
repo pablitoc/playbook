@@ -1,0 +1,37 @@
+---
+- name: Check if Ruby is installed
+  shell: /usr/bin/test "ruby -v|grep "ruby"|awk '{print $2}'" = "{{ ruby_fversion }}"&& echo True || echo False
+  register: installed_ruby
+  ignore_errors: yes
+
+# - name: Test if ruby is installed
+#   shell: /usr/bin/test "{{ installed_ruby }}" != "{{ ruby_fversion }}"&& echo True || echo False
+#   register: result
+#   ignore_errors: yes
+
+- name: Download Ruby Source
+  get_url: url=ftp://ftp.ruby-lang.org/pub/ruby/{{ ruby_mversion }}/ruby-{{ ruby_fversion }}.tar.gz dest=/tmp/
+  when: installed_ruby == "True"
+
+# - name: Unzip Ruby
+#   shell: /bin/tar xvfz ruby-{{ ruby_fversion }}.tar.gz chdir=/tmp 
+#   only_if: $installed_ruby != $ruby_fversion
+
+# - name: Take Ownership of Ruby Folder
+#   shell: /bin/chown -hR deploy:deploy  /tmp/ruby-{{ ruby_fversion }}
+#   only_if: $installed_ruby != $ruby_fversion
+
+# - name: Change Directory &  Configure Ruby
+#   shell: ./configure chdir=/tmp/ruby-{{ ruby_fversion }}
+#   only_if: $installed_ruby != $ruby_fversion
+
+# - name: Ruby | Make
+#   shell: chdir=/tmp/ruby-{{ ruby_fversion }} make
+#   only_if: $installed_ruby != $ruby_fversion
+
+# - name: Ruby | Make Install
+#   shell: sudo make install chdir=/tmp/ruby-{{ ruby_fversion }}/
+#   only_if: $installed_ruby != $ruby_fversion
+
+- name: Update Gems
+  shell: sudo gem update --system
